@@ -1,6 +1,6 @@
 /* ============================================
-   MUST Application Portal — shared styles
-   Glassmorphic login / signup UI (HTML + CSS)
+   MUST Transcript Verification Portal
+   Glassmorphic UI (HTML + CSS)
    ============================================ */
 
 /* Design tokens */
@@ -10,6 +10,8 @@
   --line: rgba(255, 255, 255, 0.35);
   --glass: rgba(255, 255, 255, 0.12);
   --glass-card: rgba(255, 255, 255, 0.18);
+  --success: #22c55e;
+  --fail: #ef4444;
 }
 
 /* Reset + base font */
@@ -107,7 +109,7 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* Login / Create Account tabs */
+/* Navigation tabs */
 .tab-headers {
   display: flex;
   margin: 0 32px 28px;
@@ -139,6 +141,13 @@ body {
 .form-row { display: flex; gap: 16px; }
 .form-row .form-group { flex: 1; }
 
+.form-intro {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
 label {
   display: block;
   margin-bottom: 8px;
@@ -168,7 +177,6 @@ input:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.15);
 }
 
-/* Native dropdown arrow kept so users see it's a select */
 select {
   cursor: pointer;
   color: rgba(255, 255, 255, 0.85);
@@ -176,7 +184,7 @@ select {
 
 select option { background: #1e1b4b; color: #fff; }
 
-/* Remember me + Forgot password row (login only) */
+/* Remember me + Forgot password row */
 .options {
   display: flex;
   align-items: center;
@@ -223,6 +231,44 @@ select option { background: #1e1b4b; color: #fff; }
 .submit-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(251, 192, 45, 0.35);
+}
+
+/* Verification result area */
+.result-area {
+  margin-top: 24px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.result-status {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  letter-spacing: 0.03em;
+}
+
+.result-status.success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.result-status.fail {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.result-message {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.45;
 }
 
 .site-footer {
