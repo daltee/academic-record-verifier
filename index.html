@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MUST Application Portal | Login</title>
+    <title>Transcript Verification | MUST</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,45 +19,70 @@
                 <div class="logo-frame">
                     <img src="images/image.png" alt="MUST Logo" class="portal-logo">
                 </div>
-                <h1 class="portal-title">Application Portal</h1>
+                <h1 class="portal-title">Transcript Verification</h1>
                 <p class="portal-subtitle">Mbarara University of Science and Technology</p>
             </header>
 
             <!-- Page tabs -->
-            <nav class="tab-headers" aria-label="Account access">
-                <a href="index.html" class="tab-link active">Login</a>
-                <a href="signup.html" class="tab-link">Create Account</a>
+            <nav class="tab-headers" aria-label="Portal navigation">
+                <a href="index.html" class="tab-link active">Verify Transcript</a>
+                <a href="signup.html" class="tab-link">Staff Access</a>
             </nav>
 
             <section class="form-panel">
-                <form action="#">
-                    <!-- type="text" so student numbers are accepted -->
+                <p class="form-intro">Enter the student registration number and the verification code (or hash) printed on the transcript to check authenticity.</p>
+
+                <form id="verify-form" action="#">
                     <div class="form-group">
-                        <label for="login-email">Student Number / Email</label>
-                        <input type="text" id="login-email" placeholder="Enter your ID or email" autocomplete="username" required>
+                        <label for="reg-number">Registration Number</label>
+                        <input type="text" id="reg-number" placeholder="e.g. 2021/BSE/001" autocomplete="off" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" required>
+                        <label for="verify-code">Verification Code / Hash</label>
+                        <input type="text" id="verify-code" placeholder="Enter code or hash from transcript" autocomplete="off" required>
                     </div>
 
-                    <div class="options">
-                        <label class="remember-option">
-                            <input type="checkbox" id="remember-me">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="#" class="forgot">Forgot Password?</a>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Login</button>
+                    <button type="submit" class="submit-btn">Verify Authenticity</button>
                 </form>
+
+                <!-- Result area (shown after verification) -->
+                <div id="result-area" class="result-area" hidden>
+                    <div id="result-status" class="result-status"></div>
+                    <p id="result-message" class="result-message"></p>
+                </div>
             </section>
         </main>
 
         <footer class="site-footer">
-            &copy; 2026 Group C | SWE. All rights reserved.
+            &copy; 2026 Group C | SWE2106 — Anti-Forgery Transcript Verification
         </footer>
     </div>
+
+    <script>
+        // Lightweight client-side placeholder (will be replaced by real API calls later)
+        document.getElementById('verify-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const reg = document.getElementById('reg-number').value.trim();
+            const code = document.getElementById('verify-code').value.trim();
+            const resultArea = document.getElementById('result-area');
+            const statusEl = document.getElementById('result-status');
+            const messageEl = document.getElementById('result-message');
+
+            resultArea.hidden = false;
+
+            // Temporary demo logic – replace with fetch('/api/verify') later
+            if (reg && code.length >= 6) {
+                statusEl.className = 'result-status success';
+                statusEl.textContent = 'Authentic';
+                messageEl.textContent = 'This transcript has been verified as genuine and issued by the Academic Registrar.';
+            } else {
+                statusEl.className = 'result-status fail';
+                statusEl.textContent = 'Invalid / Not Found';
+                messageEl.textContent = 'No matching record found or the verification code is incorrect. Please check the details and try again.';
+            }
+        });
+    </script>
 </body>
 </html>
