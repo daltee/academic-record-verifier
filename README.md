@@ -76,3 +76,7 @@ Follow these steps to set up the project:
 
 5. Configure the environment variables in your `.env` file.
 6. Start the server using the start command provided in `package.json`.
+
+## Postman verification tests
+
+The Postman collection for invalid transcript verification requests and instructions for importing and running it are in [`docs/postman/README.md`](docs/postman/README.md). The collection currently documents the proposed `POST /api/verify` contract; the backend endpoint must be implemented and aligned with that contract before the tests can pass.
