@@ -1,24 +1,24 @@
-// Import Express
-const express = require('express');
+/**
+ * transcriptRoutes.js
+ * Routes for transcript issue, verify and retrieve
+ */
 
-// Import transcript controller functions
+const express = require('express');
 const {
-    issueTranscript,
-    getTranscriptById,
-    verifyTranscript
+  issueTranscript,
+  verifyTranscript,
+  getTranscriptById
 } = require('../controllers/transcriptController');
 
-// Create router instance
 const router = express.Router();
 
 // Issue a new transcript
-router.post('/', issueTranscript);
+router.post('/issue', issueTranscript);
 
-// Verify transcript authenticity
+// Verify transcript authenticity (public)
 router.post('/verify', verifyTranscript);
 
 // Retrieve a transcript by ID
 router.get('/:id', getTranscriptById);
 
-// Export routes
 module.exports = router;
