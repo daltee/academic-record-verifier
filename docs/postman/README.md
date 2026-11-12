@@ -1,35 +1,58 @@
-# Postman verification tests
+# Postman collections
 
-This folder contains a Postman collection for negative tests of the transcript verification API.
+This folder contains Postman collections for testing the Transcript Verification API.
+
+## Collections
+
+| File | Purpose |
+| --- | --- |
+| `Academic-Record-Verifier.postman_collection.json` | Successful (happy-path) requests |
+| `transcript-verification.postman_collection.json` | Invalid / negative test cases |
 
 ## Import and run
 
-The backend server and verification route are currently empty, so the collection cannot yet be run against this repository. Once `POST /api/verify` is implemented:
+1. Start the backend from `backend/`:
+   ```bash
+   npm install
+   cp .env.example .env   # fill in MONGODB_URI and JWT_SECRET
+   npm run dev
+   ```
+2. (Optional) Seed sample data:
+   ```bash
+   npm run seed
+   ```
+3. In Postman, choose **Import** and select one or both collection files.
+4. If the API is not at `http://localhost:5000`, edit the collection variable `baseUrl`.
+5. For protected routes (issue / revoke), first call **Login** and copy the returned JWT into the `token` collection variable (or Authorization header).
 
-1. Configure the backend environment and database as required by its implementation.
-2. Start the backend from `backend/` with `npm start`.
-3. In Postman, choose **Import** and select `transcript-verification.postman_collection.json`.
-4. If the API is not running at `http://localhost:5000`, edit the collection's `baseUrl` variable.
-5. Run **Academic Record Verifier - Invalid Requests**.
+## API contract
 
-The collection contains requests for missing fields, blank values, wrong field types, malformed JSON, and a well-formed request that does not match a record. Its test scripts check the expected HTTP status codes.
+| Endpoint | Method | Auth | Description |
+| --- | --- | --- | --- |
+| `/api/health` | GET | Public | Health check |
+| `/api/auth/login` | POST | Public | Staff login → JWT |
+| `/api/transcripts/verify` | POST | Public | Verify registration number + hash |
+| `/api/transcripts/issue` | POST | Bearer JWT | Issue a new transcript |
+| `/api/transcripts/revoke/:id` | PATCH | Bearer JWT | Revoke a transcript |
+| `/api/transcripts/:id` | GET | Public | Get transcript by ID |
 
-## API contract used by this collection
-
-The verification form identifies the inputs as a registration number and a verification code/hash, and its frontend placeholder points to `POST /api/verify`. The collection therefore sends JSON in this shape:
+### Verify body
 
 ```json
 {
-  "registrationNumber": "2021/BSE/001",
-  "verificationCode": "code-or-hash-from-transcript"
+  "registrationNumber": "2021/BSE/001/PS",
+  "verificationHash": "ABC123..."
 }
 ```
 
-The expected responses are:
+(`verificationCode` is also accepted as an alias for `verificationHash`.)
 
-| Case | Expected status |
+### Expected status codes
+
+| Case | Status |
 | --- | --- |
-| Missing, blank, wrong-type fields, or malformed JSON | `400 Bad Request` |
-| Well-formed values that do not match a record | `404 Not Found` |
-
-The invalid-record response should not include transcript data. These requests describe a proposed contract, not verified backend behavior. Align the route, field names, and status codes with the backend before treating a failing test as a regression.
+| Missing / blank / wrong-type fields | `400` |
+| Valid credentials, unmatched record | `404` |
+| Authentic transcript | `200` + `status: "AUTHENTIC"` |
+| Revoked transcript | `400` + `status: "REVOKED"` |
+| Unauthorized staff action | `401` |
