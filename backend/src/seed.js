@@ -12,21 +12,21 @@ const { generateVerificationHash } = require('./utils/signature');
 const sampleStudents = [
   {
     registrationNumber: '2021/BSE/001/PS',
-    studentName: 'Ninsiima Caroline',
+    studentName: 'Wembly Katumba',
     program: 'Bachelor of Science in Software Engineering',
     yearOfStudy: 3,
     gpa: 4.2
   },
   {
     registrationNumber: '2022/BSE/045/PS',
-    studentName: 'Mutebi Dalton',
+    studentName: 'Mugwanya Samuel',
     program: 'Bachelor of Science in Software Engineering',
     yearOfStudy: 2,
     gpa: 3.9
   },
   {
     registrationNumber: '2020/BSE/112/PS',
-    studentName: 'Mukisa Timothy',
+    studentName: 'Nakatudde Patricia',
     program: 'Bachelor of Science in Software Engineering',
     yearOfStudy: 4,
     gpa: 4.5
