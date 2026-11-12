@@ -1,0 +1,30 @@
+# Render Blueprint – public Transcript Verification API
+# Docs: https://render.com/docs/blueprint-spec
+#
+# After connecting this repo on Render, set these Environment Variables in the dashboard:
+#   MONGODB_URI
+#   JWT_SECRET
+#   JWT_EXPIRES_IN=1d
+#   SIGNATURE_SECRET
+#   NODE_ENV=production
+
+services:
+  - type: web
+    name: academic-record-verifier
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: SIGNATURE_SECRET
+        sync: false
