@@ -59,8 +59,17 @@ const verifyTranscript = async (req, res) => {
   }
 };
 
-module.exports = {
+const express = require('express');
+const { verifyTranscript } = require('../controllers/transcriptController');
+
+const router = express.Router();
+
+// Only the working route for now
+router.post('/verify', verifyTranscript);
+
+module.exports = router;
+//module.exports = {
   // issueTranscript,      <- Ataho's
   // getTranscriptById,    <- whoever owns it
   verifyTranscript
-};
+//};
