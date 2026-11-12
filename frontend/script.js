@@ -3,7 +3,17 @@
  * Frontend logic for verification page and staff portal
  */
 
-const API_BASE = 'http://localhost:5000/api';
+function getApiBase() {
+  if (window.APP_CONFIG && typeof window.APP_CONFIG.getApiBase === 'function') {
+    return window.APP_CONFIG.getApiBase();
+  }
+  // Fallback if config.js failed to load
+  var host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return 'http://localhost:5000/api';
+  }
+  return 'https://academic-record-verifier.onrender.com/api';
+}
 
 function escapeHtml(str) {
   return String(str)
@@ -19,18 +29,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function setupVerifyForm() {
-  const form = document.getElementById('verify-form');
+  var form = document.getElementById('verify-form');
   if (!form) return;
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const reg = document.getElementById('reg-number').value.trim();
-    const code = document.getElementById('verify-code').value.trim();
-    const resultArea = document.getElementById('result-area');
-    const statusEl = document.getElementById('result-status');
-    const messageEl = document.getElementById('result-message');
-    const detailsEl = document.getElementById('result-details');
+    var reg = document.getElementById('reg-number').value.trim();
+    var code = document.getElementById('verify-code').value.trim();
+    var resultArea = document.getElementById('result-area');
+    var statusEl = document.getElementById('result-status');
+    var messageEl = document.getElementById('result-message');
+    var detailsEl = document.getElementById('result-details');
 
     resultArea.hidden = false;
     statusEl.className = 'result-status';
@@ -39,7 +49,7 @@ function setupVerifyForm() {
     if (detailsEl) detailsEl.innerHTML = '';
 
     try {
-      const response = await fetch(API_BASE + '/transcripts/verify', {
+      var response = await fetch(getApiBase() + '/transcripts/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -48,7 +58,7 @@ function setupVerifyForm() {
         })
       });
 
-      const data = await response.json();
+      var data = await response.json();
 
       if (data.success && data.status === 'AUTHENTIC') {
         statusEl.className = 'result-status success';
@@ -56,7 +66,7 @@ function setupVerifyForm() {
         messageEl.textContent = data.message || 'This transcript has been verified as genuine.';
 
         if (detailsEl && data.data) {
-          const d = data.data;
+          var d = data.data;
           detailsEl.innerHTML =
             '<div class="detail-row"><span>Student</span><strong>' +
             escapeHtml(d.studentName || '-') +
@@ -89,12 +99,12 @@ function setupVerifyForm() {
 }
 
 function setupStaffPortal() {
-  const loginForm = document.getElementById('staff-login-form');
-  const loginPanel = document.getElementById('login-panel');
-  const issuePanel = document.getElementById('issue-panel');
-  const staffStatus = document.getElementById('staff-status');
-  const issueForm = document.getElementById('issue-form');
-  const logoutBtn = document.getElementById('logout-btn');
+  var loginForm = document.getElementById('staff-login-form');
+  var loginPanel = document.getElementById('login-panel');
+  var issuePanel = document.getElementById('issue-panel');
+  var staffStatus = document.getElementById('staff-status');
+  var issueForm = document.getElementById('issue-form');
+  var logoutBtn = document.getElementById('logout-btn');
 
   if (localStorage.getItem('staffToken') && loginPanel && issuePanel) {
     loginPanel.hidden = true;
@@ -105,9 +115,9 @@ function setupStaffPortal() {
   if (loginForm) {
     loginForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      const email = document.getElementById('staff-email').value.trim();
-      const password = document.getElementById('staff-password').value;
-      const msgEl = document.getElementById('login-message');
+      var email = document.getElementById('staff-email').value.trim();
+      var password = document.getElementById('staff-password').value;
+      var msgEl = document.getElementById('login-message');
 
       if (msgEl) {
         msgEl.textContent = 'Signing in...';
@@ -115,12 +125,12 @@ function setupStaffPortal() {
       }
 
       try {
-        const res = await fetch(API_BASE + '/auth/login', {
+        var res = await fetch(getApiBase() + '/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email, password: password })
         });
-        const data = await res.json();
+        var data = await res.json();
 
         if (data.success && data.token) {
           localStorage.setItem('staffToken', data.token);
@@ -147,11 +157,11 @@ function setupStaffPortal() {
   if (issueForm) {
     issueForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      const token = localStorage.getItem('staffToken');
-      const msgEl = document.getElementById('issue-message');
-      const resultBox = document.getElementById('issue-result');
+      var token = localStorage.getItem('staffToken');
+      var msgEl = document.getElementById('issue-message');
+      var resultBox = document.getElementById('issue-result');
 
-      const payload = {
+      var payload = {
         registrationNumber: document.getElementById('issue-reg').value.trim(),
         studentName: document.getElementById('issue-name').value.trim(),
         program: document.getElementById('issue-program').value.trim(),
@@ -167,7 +177,7 @@ function setupStaffPortal() {
       }
 
       try {
-        const res = await fetch(API_BASE + '/transcripts/issue', {
+        var res = await fetch(getApiBase() + '/transcripts/issue', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -175,7 +185,7 @@ function setupStaffPortal() {
           },
           body: JSON.stringify(payload)
         });
-        const data = await res.json();
+        var data = await res.json();
 
         if (data.success) {
           if (msgEl) {
