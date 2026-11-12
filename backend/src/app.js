@@ -13,19 +13,33 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-// Security & utility middleware
-app.use(helmet());
-app.use(cors());
-app.use(morgan('dev'));
+// Security headers (relaxed crossOrigin for simple static frontend)
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+  })
+);
+
+// Allow the Vercel frontend + local dev. For the Etivity demo we accept any origin.
+app.use(
+  cors({
+    origin: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
+
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());
 
-// Health check
+// Health check – used by Render and by the team
 app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Transcript Verification API is running',
     version: '1.0.0',
-    group: 'Group C - SWE2106'
+    group: 'Group C - SWE2106',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
