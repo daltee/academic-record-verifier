@@ -1,6 +1,6 @@
 /**
  * transcriptController.js
- * Core business logic for issuing and verifying transcripts
+ * Core business logic for issuing, verifying and revoking transcripts
  */
 
 const crypto = require('crypto');
@@ -18,6 +18,7 @@ const safeEqual = (a, b) => {
 /**
  * POST /api/transcripts/issue
  * Issue a new transcript and generate a verification hash
+ * Protected – requires staff JWT
  */
 const issueTranscript = async (req, res) => {
   try {
@@ -44,7 +45,7 @@ const issueTranscript = async (req, res) => {
       yearOfStudy: Number(yearOfStudy),
       gpa: gpa !== undefined ? Number(gpa) : undefined,
       verificationHash,
-      issuedBy: 'Academic Registrar'
+      issuedBy: req.user?.name || 'Academic Registrar'
     });
 
     return res.status(201).json({
@@ -61,7 +62,6 @@ const issueTranscript = async (req, res) => {
       }
     });
   } catch (error) {
-    // Handle duplicate key error (unique verificationHash)
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
@@ -84,7 +84,6 @@ const issueTranscript = async (req, res) => {
 const verifyTranscript = async (req, res) => {
   try {
     const body = req.body || {};
-    // Accept both names for flexibility
     const registrationNumber = body.registrationNumber;
     const verificationHash = body.verificationHash || body.verificationCode;
 
@@ -106,7 +105,6 @@ const verifyTranscript = async (req, res) => {
       registrationNumber: registrationNumber.trim().toUpperCase()
     });
 
-    // Same response for "not found" and "wrong hash" (avoids leaking which reg numbers exist)
     if (!transcript || !safeEqual(transcript.verificationHash, verificationHash.trim())) {
       return res.status(404).json({
         success: false,
@@ -148,7 +146,6 @@ const verifyTranscript = async (req, res) => {
 
 /**
  * GET /api/transcripts/:id
- * Retrieve a transcript by its MongoDB id (basic version)
  */
 const getTranscriptById = async (req, res) => {
   try {
@@ -173,8 +170,58 @@ const getTranscriptById = async (req, res) => {
   }
 };
 
+/**
+ * PATCH /api/transcripts/revoke/:id
+ * Protected – staff only
+ */
+const revokeTranscript = async (req, res) => {
+  try {
+    const { reason } = req.body || {};
+
+    const transcript = await Transcript.findById(req.params.id);
+
+    if (!transcript) {
+      return res.status(404).json({
+        success: false,
+        message: 'Transcript not found'
+      });
+    }
+
+    if (transcript.isRevoked) {
+      return res.status(400).json({
+        success: false,
+        message: 'Transcript is already revoked'
+      });
+    }
+
+    transcript.isRevoked = true;
+    transcript.revokedAt = new Date();
+    transcript.revokedReason = reason || 'Revoked by Academic Registrar';
+    await transcript.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Transcript revoked successfully',
+      data: {
+        id: transcript._id,
+        registrationNumber: transcript.registrationNumber,
+        isRevoked: transcript.isRevoked,
+        revokedAt: transcript.revokedAt,
+        revokedReason: transcript.revokedReason
+      }
+    });
+  } catch (error) {
+    console.error('Revoke transcript error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while revoking transcript'
+    });
+  }
+};
+
 module.exports = {
   issueTranscript,
   verifyTranscript,
-  getTranscriptById
+  getTranscriptById,
+  revokeTranscript
 };

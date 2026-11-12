@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 /**
  * Protect middleware
  * Checks for a valid JWT in the Authorization header
- * Header format:  Authorization: Bearer <token>
+ * Header format: Authorization: Bearer <token>
  */
 const protect = (req, res, next) => {
   let token;
@@ -30,10 +30,7 @@ const protect = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Attach user info to the request object
-    req.user = decoded; // e.g. { id, name, role }
-
+    req.user = decoded; // { id, name, role, email }
     next();
   } catch (error) {
     return res.status(401).json({
@@ -45,7 +42,6 @@ const protect = (req, res, next) => {
 
 /**
  * Generate a JWT token
- * Useful when creating a login route later
  */
 const generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
