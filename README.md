@@ -1,82 +1,155 @@
-# **Group C Anti-Forgery Transcript Verification API**
-This project aims to make it easier for employers and other authorized users to verify academic transcripts issued by Mbarara University of Science and Technology (MUST). It helps identify fake or altered transcripts by checking the information provided against official academic records.
+# Group C — Anti-Forgery Transcript Verification API
 
-## Project Overview
-The Transcript Verification API is a system designed to help confirm whether academic transcripts are genuine. It aims to reduce the use of forged or changed academic documents by allowing authorized users to verify student academic records.
+A secure Transcript Verification system for **Mbarara University of Science and Technology (MUST)**. Academic Registrar staff issue digitally protected transcripts with a unique verification hash. Employers and other institutions can instantly check whether a transcript is **Authentic**, **Invalid**, or **Revoked**.
 
-## Current Project Development
-The project currently includes:
-- A frontend verification page built with HTML, CSS and JavaScript.
-- A backend API developed using Node.js and Express.
-- Basic security features and environment configuration.
-- A documentation folder containing project files.
+**Course:** SWE2106 Internet Technologies and Web Design  
+**Etivity 5:** Front-end and Backend Development leveraging JavaScript
 
- ## Project Objectives
-The main objectives of this project are to:
-- Verify the authenticity of academic transcripts.
-- Reduce the use of fake or altered academic records.
-- Allow employers and authorized users to check student academic information.
-- Develop an API for issuing and verifying transcripts.
-- Provide a simple and secure way to confirm academic records.
+---
 
- ## Main Features
-The system is being developed with the following features:
-- A transcript verification form.
-- Registration number and verification code fields.
-- A staff access page.
-- An API health check endpoint (`/api/health`).
-- Backend support for issuing transcripts.
-- Backend support for verifying transcripts.
-- Backend support for retrieving transcript information.
-- Basic security features to protect the application.
+## Features
 
- ## Technologies Used
-### Frontend
-- HTML
-- CSS
-- JavaScript
-### Backend
-- Node.js
-- Express.js
-### Database
-- MongoDB
-### Other Tools and Libraries
-- JWT for authentication support.
-- bcryptjs for password hashing.
-- dotenv for managing environment variables.
-- Helmet for security headers.
-- CORS for handling cross-origin requests.
-- Morgan for request logging.
+- Staff login with JWT (demo credentials included)
+- Issue transcript → unique HMAC verification hash generated
+- Public verification endpoint (registration number + hash)
+- Revoke transcripts (staff only)
+- Input validation and clear API error responses
+- Live MongoDB connection (Atlas or local)
+- Simple web frontend for verification and staff issuance
+- Documented Postman collections (valid + invalid cases)
+- Seed script for sample data
 
- ## Project Structure
-The project is organized into the following folders:
-- `frontend/` – Contains the website files.
-- `backend/` – Contains the server and API files.
-- `docs/` – Contains project documentation.
+---
 
- ## System Requirements
-To run the project, you need:
-- Node.js installed on your computer.
-- npm (Node Package Manager).
-- A modern web browser.
-- MongoDB, either locally or through MongoDB Atlas.
-- A properly configured `.env` file.
+## Tech Stack
 
- ## Installation and Setup
-Follow these steps to set up the project:
-1. Clone the repository from GitHub.
-2. Open the project folder in your terminal.
-3. Navigate to the backend folder:
+| Layer | Technology |
+| --- | --- |
+| Backend | Node.js, Express.js |
+| Database | MongoDB (Mongoose) |
+| Auth | JSON Web Tokens (JWT) |
+| Frontend | HTML, CSS, Vanilla JavaScript |
+| Testing | Postman |
 
- `cd backend`
+---
 
-4. Install the required dependencies:
+## Project Structure
 
-   `npm install`
+```
+academic-record-verifier/
+├── backend/
+│   ├── server.js
+│   ├── package.json
+│   ├── .env.example
+│   └── src/
+│       ├── app.js
+│       ├── config/db.js
+│       ├── controllers/transcriptController.js
+│       ├── middleware/auth.js
+│       ├── middleware/validate.js
+│       ├── models/Transcript.js
+│       ├── routes/authRoutes.js
+│       ├── routes/transcriptRoutes.js
+│       ├── utils/signature.js
+│       └── seed.js
+├── frontend/
+│   ├── index.html          # Public verification page
+│   ├── signup.html         # Staff login + issue form
+│   ├── script.js
+│   ├── style.css
+│   └── MUST Badge.jpeg
+├── docs/postman/           # Postman collections + docs
+├── .gitignore
+└── README.md
+```
 
-5. Configure the environment variables in your `.env` file.
-6. Start the server using the start command provided in `package.json`.
+---
 
-## Postman verification tests
+## Quick Start
 
-The Postman collection for invalid transcript verification requests and instructions for importing and running it are in [`docs/postman/README.md`](docs/postman/README.md). The collection currently documents the proposed `POST /api/verify` contract; the backend endpoint must be implemented and aligned with that contract before the tests can pass.
+### 1. Clone and install
+
+```bash
+git clone https://github.com/daltee/academic-record-verifier.git
+cd academic-record-verifier/backend
+npm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set:
+
+- `MONGODB_URI` — MongoDB Atlas connection string (or local)
+- `JWT_SECRET` — any strong random string
+- `SIGNATURE_SECRET` — secret used for hash generation
+
+### 3. Seed sample data (optional)
+
+```bash
+npm run seed
+```
+
+This creates a few sample transcripts and prints their verification hashes so you can test immediately.
+
+### 4. Start the API
+
+```bash
+npm run dev
+```
+
+Server runs at `http://localhost:5000`. Health check: `GET /api/health`.
+
+### 5. Open the frontend
+
+Open `frontend/index.html` in a browser (or serve the folder with any static server).
+
+- **Verify page:** enter a registration number + hash
+- **Staff Access:** login with demo credentials, then issue new transcripts
+
+**Demo staff login**
+
+- Email: `registrar@must.ac.ug`
+- Password: `staff123`
+
+---
+
+## Main API Endpoints
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/health` | Public | Health check |
+| POST | `/api/auth/login` | Public | Staff login → JWT |
+| POST | `/api/transcripts/verify` | Public | Verify transcript |
+| POST | `/api/transcripts/issue` | JWT | Issue transcript |
+| PATCH | `/api/transcripts/revoke/:id` | JWT | Revoke transcript |
+| GET | `/api/transcripts/:id` | Public | Get by ID |
+
+Full request/response details and negative tests are in [`docs/postman/`](docs/postman/).
+
+---
+
+## Team Roles (Group C)
+
+| Member | Role |
+| --- | --- |
+| Mutebi Dalton | Team Lead, Repo & Frontend Integration |
+| Mukisa Timothy | Backend Lead – Express & Routes |
+| Ankunda Asaph Graham | Authentication, JWT & Roles |
+| Ataho Aprinal | Issuing Transcripts & Signature |
+| Ssekajigo Elvis Mark | Verification Endpoint |
+| Abaho Paul | Database, Schema & Seed Data |
+| Namukasa Fahiimah | Input Validation & Error Handling |
+| Mugisha Fahadi | Postman – Valid Requests |
+| Lusoke Atka Yursa | Postman – Invalid Requests & Docs |
+| Batabaine Hillary Austin | Frontend – Verify Page & Staff UI |
+| Ninsiima Caroline | Proposal, README & Presentation |
+
+---
+
+## License
+
+Academic project for educational purposes — Group C, Faculty of Computing and Informatics, MUST.
