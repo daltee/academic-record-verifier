@@ -1,0 +1,134 @@
+{
+  "info": {
+    "_postman_id": "4c832adb-bfda-4a0f-9f22-afe6d9f9ee11",
+    "name": "Academic Record Verifier",
+    "description": "Valid-case workflow for the transcript API. Run the collection in order: issue a transcript, then verify it using the generated code. Both requests must reach the same running server because the API keeps issued transcripts in memory.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "registrationNumber",
+      "value": ""
+    },
+    {
+      "key": "verificationCode",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Issue transcript (valid case setup)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"registrationNumber\": \"{{registrationNumber}}\",\n  \"studentName\": \"Jordan Sample\",\n  \"program\": \"Bachelor of Software Engineering\",\n  \"issuingAuthority\": \"Academic Registrar\",\n  \"transcriptType\": \"Official Transcript\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/transcripts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transcripts"
+          ]
+        },
+        "description": "Creates a transcript record and saves its generated verification code for the next request."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('registrationNumber', `POSTMAN/${Date.now()}`);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Transcript was issued successfully', function () {",
+              "    pm.response.to.have.status(201);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.eql(true);",
+              "    pm.expect(response.transcript).to.be.an('object');",
+              "    pm.expect(response.transcript.verificationCode).to.be.a('string').and.not.empty;",
+              "    pm.collectionVariables.set('verificationCode', response.transcript.verificationCode);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify transcript (valid case)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"registrationNumber\": \"{{registrationNumber}}\",\n  \"verificationCode\": \"{{verificationCode}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/transcripts/verify",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "transcripts",
+            "verify"
+          ]
+        },
+        "description": "Verifies the transcript created by the first request."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Transcript is authentic', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.eql(true);",
+              "    pm.expect(response.status).to.eql('Authentic');",
+              "    pm.expect(response.transcript.registrationNumber).to.eql(pm.collectionVariables.get('registrationNumber'));",
+              "    pm.expect(response.transcript.verificationCode).to.eql(pm.collectionVariables.get('verificationCode'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,20 +1,16 @@
 /* ============================================
    MUST Transcript Verification Portal
-   Glassmorphic UI (HTML + CSS)
+   Owner: Hillary Austin (Frontend)
    ============================================ */
 
-/* Design tokens */
 :root {
   --gold: #fbc02d;
   --ink: #17213f;
   --line: rgba(255, 255, 255, 0.35);
   --glass: rgba(255, 255, 255, 0.12);
   --glass-card: rgba(255, 255, 255, 0.18);
-  --success: #22c55e;
-  --fail: #ef4444;
 }
 
-/* Reset + base font */
 * {
   margin: 0;
   padding: 0;
@@ -22,37 +18,16 @@
   font-family: "Segoe UI", system-ui, sans-serif;
 }
 
-/* Full-viewport centered layout */
 body {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 32px 20px;
-  background: linear-gradient(145deg, #0f172a, #1e1b4b 50%, #1a2b7c);
+  background: #0f172a;
   overflow-x: hidden;
 }
 
-/* Soft blurred orbs behind the card */
-.shape {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-}
-.shape-1 {
-  width: 320px; height: 320px;
-  top: -100px; left: -100px;
-  background: rgba(251, 192, 45, 0.3);
-}
-.shape-2 {
-  width: 420px; height: 420px;
-  right: -160px; bottom: -180px;
-  background: rgba(42, 54, 134, 0.55);
-}
-
-/* Content wrapper sits above ambient shapes */
 .page-shell {
   position: relative;
   z-index: 1;
@@ -60,7 +35,6 @@ body {
   max-width: 440px;
 }
 
-/* Main glass card */
 .portal-card {
   border-radius: 24px;
   border: 1px solid var(--line);
@@ -76,25 +50,31 @@ body {
   text-align: center;
 }
 
-/* Circular glass frame around the logo */
 .logo-frame {
-  width: 108px; height: 108px;
+  width: 108px;
+  height: 108px;
   margin: 0 auto 18px;
   border-radius: 50%;
   border: 1px solid var(--line);
   background: var(--glass);
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
-
-.portal-logo {
-  width: 78px; height: 78px;
+.logo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  border-radius: 50%;
 }
 
 .portal-title {
@@ -109,7 +89,6 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* Navigation tabs */
 .tab-headers {
   display: flex;
   margin: 0 32px 28px;
@@ -135,11 +114,8 @@ body {
   border-bottom-color: var(--gold);
 }
 
-/* Form layout */
 .form-panel { padding: 0 32px 36px; }
 .form-group { margin-bottom: 20px; }
-.form-row { display: flex; gap: 16px; }
-.form-row .form-group { flex: 1; }
 
 .form-intro {
   font-size: 0.9rem;
@@ -156,8 +132,7 @@ label {
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Shared field styles */
-input, select {
+input {
   width: 100%;
   padding: 13px 16px;
   border: 1px solid var(--line);
@@ -171,50 +146,12 @@ input, select {
 
 input::placeholder { color: rgba(255, 255, 255, 0.45); }
 
-input:focus, select:focus {
+input:focus {
   border-color: rgba(251, 192, 45, 0.6);
   background: rgba(255, 255, 255, 0.16);
   box-shadow: 0 0 0 3px rgba(251, 192, 45, 0.15);
 }
 
-select {
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-select option { background: #1e1b4b; color: #fff; }
-
-/* Remember me + Forgot password row */
-.options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 24px;
-}
-
-.remember-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-}
-
-.remember-option input {
-  width: 16px; height: 16px;
-  accent-color: var(--gold);
-}
-
-.forgot {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--gold);
-  text-decoration: none;
-}
-.forgot:hover { text-decoration: underline; }
-
-/* Primary action button */
 .submit-btn {
   width: 100%;
   padding: 15px;
@@ -233,7 +170,6 @@ select option { background: #1e1b4b; color: #fff; }
   box-shadow: 0 8px 20px rgba(251, 192, 45, 0.35);
 }
 
-/* Verification result area */
 .result-area {
   margin-top: 24px;
   padding: 18px 16px;
@@ -250,7 +186,6 @@ select option { background: #1e1b4b; color: #fff; }
   font-weight: 700;
   font-size: 0.9rem;
   margin-bottom: 10px;
-  letter-spacing: 0.03em;
 }
 
 .result-status.success {
@@ -278,13 +213,9 @@ select option { background: #1e1b4b; color: #fff; }
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Mobile: stack form rows, tighten padding */
 @media (max-width: 480px) {
   body { padding: 24px 16px; }
   .portal-header { padding: 32px 24px 16px; }
-  .logo-frame { width: 96px; height: 96px; }
-  .portal-logo { width: 70px; height: 70px; }
   .tab-headers { margin: 0 24px 24px; }
   .form-panel { padding: 0 24px 28px; }
-  .form-row { flex-direction: column; gap: 0; }
 }
