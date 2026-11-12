@@ -1,45 +1,53 @@
-// Import required packages
+/**
+ * app.js
+ * Express application setup
+ */
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-// Import transcript routes
 const transcriptRoutes = require('./routes/transcriptRoutes');
+const authRoutes = require('./routes/authRoutes');
 
-// Create Express application
 const app = express();
 
-// Security middleware
+// Security & utility middleware
 app.use(helmet());
-
-// Enable cross-origin requests
 app.use(cors());
-
-// Log incoming HTTP requests
 app.use(morgan('dev'));
-
-// Parse incoming JSON data
 app.use(express.json());
 
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: 'Transcript Verification API is running'
-    });
+  res.status(200).json({
+    success: true,
+    message: 'Transcript Verification API is running',
+    version: '1.0.0',
+    group: 'Group C - SWE2106'
+  });
 });
 
-// Register transcript routes
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/transcripts', transcriptRoutes);
 
-// Handle unknown routes
+// 404 handler
 app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Route not found'
-    });
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
 });
 
-// Export the application
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || 'Internal Server Error'
+  });
+});
+
 module.exports = app;
