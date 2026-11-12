@@ -3,12 +3,13 @@
  * API base URL for the frontend.
  *
  * LOCAL:   uses http://localhost:5000/api
- * LIVE:    uses the public backend URL below
+ * LIVE:    uses https://academic-record-verifier.onrender.com/
  *
  * After you deploy the backend on Render (or Railway), paste the public URL here.
  * Example: https://academic-record-verifier.onrender.com/api
  */
 
+PRODUCTION_API_BASE: 'https://academic-record-verifier.onrender.com/',
 window.APP_CONFIG = {
   // Change this one line after deploying the backend
   PRODUCTION_API_BASE: 'https://academic-record-verifier.onrender.com/api',
