@@ -1,12 +1,17 @@
-// Transcript Verification – client-side logic
-// Temporary demo placeholder. Replace with real API calls later.
+/**
+ * script.js
+ * Owner: Hillary Austin (Frontend) + Dalton (Integration)
+ * Client-side logic for transcript verification
+ *
+ * Later: replace the demo logic with a real fetch() call to your Express API
+ */
 
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('verify-form');
 
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const reg = document.getElementById('reg-number').value.trim();
@@ -17,7 +22,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         resultArea.hidden = false;
 
-        // Temporary demo logic – replace with fetch('/api/verify') later
+        // -------------------------------------------------------
+        // TODO (Hillary / Dalton): Replace this demo with real API
+        // Example:
+        // const response = await fetch('http://localhost:5000/api/transcripts/verify', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ registrationNumber: reg, verificationHash: code })
+        // });
+        // const data = await response.json();
+        // -------------------------------------------------------
+
+        // Temporary demo logic
         if (reg && code.length >= 6) {
             statusEl.className = 'result-status success';
             statusEl.textContent = 'Authentic';
