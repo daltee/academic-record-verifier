@@ -115,6 +115,12 @@ Open `frontend/index.html` in a browser.
 - Email: `registrar@must.ac.ug`
 - Password: `staff123`
 
+## Architecture and local setup notes
+
+- [High-resolution architecture diagram (PNG)](docs/architecture/academic-record-verifier-architecture.png)
+- [Editable Mermaid diagram for VS Code](docs/architecture/academic-record-verifier-architecture.mmd)
+- [Detailed local setup and implementation notes](docs/architecture/LOCAL-SETUP.md)
+
 ---
 
 ## Project Structure
