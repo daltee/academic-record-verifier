@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="page-shell wide">
-        <main class="portal-card">
+    <div class="page-shell dashboard">
+        <main class="portal-card dashboard-card">
             <header class="portal-header">
                 <div class="logo-frame">
                     <div class="logo">
@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <h1 class="portal-title">MUST Staff Access</h1>
-                <p class="portal-subtitle">Academic Registrar — Transcript Issuance</p>
+                <p class="portal-subtitle">Academic Registrar — Transcript Issuance & Dashboard</p>
                 <p id="staff-status" class="staff-status"></p>
             </header>
 
@@ -45,44 +45,82 @@
                 </form>
             </section>
 
-            <section id="issue-panel" class="form-panel" hidden>
+            <section id="issue-panel" class="form-panel staff-workspace" hidden>
                 <div class="panel-header-row">
-                    <p class="form-intro">Issue a new digitally protected transcript. The system generates a unique verification hash.</p>
-                    <button type="button" id="logout-btn" class="logout-btn">Logout</button>
+                    <p class="form-intro">Issue new transcripts and review every registered student with their verification hash.</p>
+                    <div class="header-actions">
+                        <button type="button" id="refresh-dashboard-btn" class="secondary-btn">Refresh list</button>
+                        <button type="button" id="logout-btn" class="logout-btn">Logout</button>
+                    </div>
                 </div>
 
-                <form id="issue-form" action="#">
-                    <div class="form-group">
-                        <label for="issue-reg">Registration Number</label>
-                        <input type="text" id="issue-reg" placeholder="e.g. 2024/BSE/100/PS" required>
+                <div class="staff-grid">
+                    <div class="issue-column">
+                        <h2 class="section-title">Issue transcript</h2>
+                        <form id="issue-form" action="#">
+                            <div class="form-group">
+                                <label for="issue-reg">Registration Number</label>
+                                <input type="text" id="issue-reg" placeholder="e.g. 2024/BSE/100/PS" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="issue-name">Student Full Name</label>
+                                <input type="text" id="issue-name" placeholder="Student name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="issue-program">Program</label>
+                                <input type="text" id="issue-program" placeholder="e.g. BSc Software Engineering" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="issue-year">Year of Study</label>
+                                    <input type="number" id="issue-year" min="1" max="10" value="3" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="issue-gpa">GPA (optional)</label>
+                                    <input type="number" id="issue-gpa" min="0" max="5" step="0.01" placeholder="e.g. 4.2">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="submit-btn">Issue Transcript</button>
+                            <p id="issue-message" class="form-message"></p>
+                        </form>
+
+                        <div id="issue-result" class="issue-result" hidden></div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="issue-name">Student Full Name</label>
-                        <input type="text" id="issue-name" placeholder="Student name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="issue-program">Program</label>
-                        <input type="text" id="issue-program" placeholder="e.g. BSc Software Engineering" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="issue-year">Year of Study</label>
-                            <input type="number" id="issue-year" min="1" max="10" value="3" required>
+                    <div class="dashboard-column">
+                        <div class="dashboard-heading">
+                            <h2 class="section-title">Registered students</h2>
+                            <p id="dashboard-count" class="dashboard-count">Loading...</p>
                         </div>
-                        <div class="form-group">
-                            <label for="issue-gpa">GPA (optional)</label>
-                            <input type="number" id="issue-gpa" min="0" max="5" step="0.01" placeholder="e.g. 4.2">
+                        <p id="dashboard-message" class="form-message"></p>
+                        <div class="table-wrap">
+                            <table class="dashboard-table" id="dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Registration</th>
+                                        <th>Student</th>
+                                        <th>Program</th>
+                                        <th>Year</th>
+                                        <th>GPA</th>
+                                        <th>Verification Hash</th>
+                                        <th>Status</th>
+                                        <th>Issued</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-body">
+                                    <tr>
+                                        <td colspan="9" class="empty-cell">Sign in to load records.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
-                    <button type="submit" class="submit-btn">Issue Transcript</button>
-                    <p id="issue-message" class="form-message"></p>
-                </form>
-
-                <div id="issue-result" class="issue-result" hidden></div>
+                </div>
             </section>
         </main>
 
