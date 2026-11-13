@@ -43,7 +43,7 @@ async function seed() {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    // Clear existing sample data (optional – comment out if you want to keep existing records)
+    // Replace only these sample records; unrelated transcripts are preserved.
     await Transcript.deleteMany({
       registrationNumber: { $in: sampleStudents.map((s) => s.registrationNumber) }
     });
