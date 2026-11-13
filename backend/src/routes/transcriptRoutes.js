@@ -1,10 +1,11 @@
 /**
  * transcriptRoutes.js
- * Routes for transcript issue, verify, retrieve and revoke
+ * Routes for transcript issue, verify, list, retrieve and revoke
  */
 
 const express = require('express');
 const {
+  listTranscripts,
   issueTranscript,
   verifyTranscript,
   getTranscriptById,
@@ -15,7 +16,6 @@ const { validateRequest } = require('../middleware/validate');
 
 const router = express.Router();
 
-// Validation schemas
 const verifySchema = {
   fields: {
     registrationNumber: { required: true, type: 'string', minLength: 3 },
@@ -34,24 +34,15 @@ const issueSchema = {
   }
 };
 
-// Public – anyone can verify a transcript
-router.post(
-  '/verify',
-  validateRequest(verifySchema),
-  verifyTranscript
-);
+// Public
+router.post('/verify', validateRequest(verifySchema), verifyTranscript);
 
-// Protected – only staff with valid JWT can issue or revoke
-router.post(
-  '/issue',
-  protect,
-  validateRequest(issueSchema),
-  issueTranscript
-);
-
+// Protected staff routes
+router.get('/', protect, listTranscripts);
+router.post('/issue', protect, validateRequest(issueSchema), issueTranscript);
 router.patch('/revoke/:id', protect, revokeTranscript);
 
-// Retrieve by ID (public for simplicity in this prototype)
+// Public get-by-id (keep after list route so "/" is not captured as :id)
 router.get('/:id', getTranscriptById);
 
 module.exports = router;
