@@ -1,13 +1,12 @@
 /**
  * transcriptController.js
- * Core business logic for issuing, verifying and revoking transcripts
+ * Core business logic for issuing, verifying, listing and revoking transcripts
  */
 
 const crypto = require('crypto');
 const Transcript = require('../models/Transcript');
 const { generateVerificationHash } = require('../utils/signature');
 
-// Compare two strings in constant time (helps prevent timing attacks)
 const safeEqual = (a, b) => {
   const bufA = Buffer.from(String(a || ''));
   const bufB = Buffer.from(String(b || ''));
@@ -16,9 +15,35 @@ const safeEqual = (a, b) => {
 };
 
 /**
- * POST /api/transcripts/issue
- * Issue a new transcript and generate a verification hash
+ * GET /api/transcripts
+ * List all transcripts for the registrar dashboard
  * Protected – requires staff JWT
+ */
+const listTranscripts = async (req, res) => {
+  try {
+    const transcripts = await Transcript.find()
+      .sort({ createdAt: -1 })
+      .select(
+        'registrationNumber studentName program yearOfStudy gpa verificationHash isRevoked revokedAt revokedReason issuedBy createdAt'
+      )
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: transcripts.length,
+      data: transcripts
+    });
+  } catch (error) {
+    console.error('List transcripts error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error while listing transcripts'
+    });
+  }
+};
+
+/**
+ * POST /api/transcripts/issue
  */
 const issueTranscript = async (req, res) => {
   try {
@@ -79,7 +104,6 @@ const issueTranscript = async (req, res) => {
 
 /**
  * POST /api/transcripts/verify
- * Public endpoint – verify a transcript by registration number + hash
  */
 const verifyTranscript = async (req, res) => {
   try {
@@ -172,7 +196,6 @@ const getTranscriptById = async (req, res) => {
 
 /**
  * PATCH /api/transcripts/revoke/:id
- * Protected – staff only
  */
 const revokeTranscript = async (req, res) => {
   try {
@@ -220,6 +243,7 @@ const revokeTranscript = async (req, res) => {
 };
 
 module.exports = {
+  listTranscripts,
   issueTranscript,
   verifyTranscript,
   getTranscriptById,

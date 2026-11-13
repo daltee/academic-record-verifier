@@ -1,13 +1,12 @@
 /**
  * script.js
- * Frontend logic for verification page and staff portal
+ * Frontend logic for verification page and staff portal + dashboard
  */
 
 function getApiBase() {
   if (window.APP_CONFIG && typeof window.APP_CONFIG.getApiBase === 'function') {
     return window.APP_CONFIG.getApiBase();
   }
-  // Fallback if config.js failed to load
   var host = window.location.hostname;
   if (host === 'localhost' || host === '127.0.0.1') {
     return 'http://localhost:5000/api';
@@ -21,6 +20,15 @@ function escapeHtml(str) {
     .replace(/</g, '<')
     .replace(/>/g, '>')
     .replace(/"/g, '"');
+}
+
+function formatDate(value) {
+  if (!value) return '-';
+  try {
+    return new Date(value).toLocaleDateString();
+  } catch (e) {
+    return String(value);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -98,6 +106,160 @@ function setupVerifyForm() {
   });
 }
 
+async function loadDashboard() {
+  var body = document.getElementById('dashboard-body');
+  var countEl = document.getElementById('dashboard-count');
+  var msgEl = document.getElementById('dashboard-message');
+  var token = localStorage.getItem('staffToken');
+
+  if (!body) return;
+
+  if (!token) {
+    body.innerHTML =
+      '<tr><td colspan="9" class="empty-cell">Sign in to load records.</td></tr>';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+
+  if (msgEl) {
+    msgEl.textContent = 'Loading dashboard...';
+    msgEl.className = 'form-message';
+  }
+  body.innerHTML =
+    '<tr><td colspan="9" class="empty-cell">Loading...</td></tr>';
+
+  try {
+    var res = await fetch(getApiBase() + '/transcripts', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    var data = await res.json();
+
+    if (!res.ok || !data.success) {
+      body.innerHTML =
+        '<tr><td colspan="9" class="empty-cell">Could not load records.</td></tr>';
+      if (msgEl) {
+        msgEl.textContent = data.message || 'Failed to load dashboard';
+        msgEl.className = 'form-message error';
+      }
+      if (countEl) countEl.textContent = '';
+      return;
+    }
+
+    var rows = data.data || [];
+    if (countEl) {
+      countEl.textContent = rows.length + ' record' + (rows.length === 1 ? '' : 's');
+    }
+
+    if (rows.length === 0) {
+      body.innerHTML =
+        '<tr><td colspan="9" class="empty-cell">No transcripts issued yet.</td></tr>';
+      if (msgEl) msgEl.textContent = '';
+      return;
+    }
+
+    body.innerHTML = rows
+      .map(function (t) {
+        var statusClass = t.isRevoked ? 'badge revoked' : 'badge active';
+        var statusText = t.isRevoked ? 'Revoked' : 'Active';
+        var revokeBtn = t.isRevoked
+          ? '<span class="muted">—</span>'
+          : '<button type="button" class="table-btn revoke-btn" data-id="' +
+            escapeHtml(t._id) +
+            '">Revoke</button>';
+
+        return (
+          '<tr>' +
+          '<td>' +
+          escapeHtml(t.registrationNumber || '-') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(t.studentName || '-') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(t.program || '-') +
+          '</td>' +
+          '<td>' +
+          escapeHtml(String(t.yearOfStudy != null ? t.yearOfStudy : '-')) +
+          '</td>' +
+          '<td>' +
+          escapeHtml(t.gpa != null ? String(t.gpa) : '-') +
+          '</td>' +
+          '<td><code class="hash-cell">' +
+          escapeHtml(t.verificationHash || '-') +
+          '</code></td>' +
+          '<td><span class="' +
+          statusClass +
+          '">' +
+          statusText +
+          '</span></td>' +
+          '<td>' +
+          escapeHtml(formatDate(t.createdAt)) +
+          '</td>' +
+          '<td>' +
+          revokeBtn +
+          '</td>' +
+          '</tr>'
+        );
+      })
+      .join('');
+
+    if (msgEl) msgEl.textContent = '';
+
+    var revokeButtons = body.querySelectorAll('.revoke-btn');
+    revokeButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        revokeTranscript(btn.getAttribute('data-id'));
+      });
+    });
+  } catch (err) {
+    body.innerHTML =
+      '<tr><td colspan="9" class="empty-cell">Could not reach the server.</td></tr>';
+    if (msgEl) {
+      msgEl.textContent = 'Could not reach the server.';
+      msgEl.className = 'form-message error';
+    }
+    if (countEl) countEl.textContent = '';
+  }
+}
+
+async function revokeTranscript(id) {
+  if (!id) return;
+  if (!window.confirm('Revoke this transcript? Employers will see it as Revoked.')) {
+    return;
+  }
+
+  var token = localStorage.getItem('staffToken');
+  var msgEl = document.getElementById('dashboard-message');
+
+  try {
+    var res = await fetch(getApiBase() + '/transcripts/revoke/' + id, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify({ reason: 'Revoked from registrar dashboard' })
+    });
+    var data = await res.json();
+
+    if (data.success) {
+      if (msgEl) {
+        msgEl.textContent = 'Transcript revoked.';
+        msgEl.className = 'form-message success';
+      }
+      loadDashboard();
+    } else if (msgEl) {
+      msgEl.textContent = data.message || 'Failed to revoke';
+      msgEl.className = 'form-message error';
+    }
+  } catch (err) {
+    if (msgEl) {
+      msgEl.textContent = 'Could not reach the server.';
+      msgEl.className = 'form-message error';
+    }
+  }
+}
+
 function setupStaffPortal() {
   var loginForm = document.getElementById('staff-login-form');
   var loginPanel = document.getElementById('login-panel');
@@ -105,11 +267,19 @@ function setupStaffPortal() {
   var staffStatus = document.getElementById('staff-status');
   var issueForm = document.getElementById('issue-form');
   var logoutBtn = document.getElementById('logout-btn');
+  var refreshBtn = document.getElementById('refresh-dashboard-btn');
+
+  function enterStaffWorkspace(name) {
+    if (loginPanel) loginPanel.hidden = true;
+    if (issuePanel) issuePanel.hidden = false;
+    if (staffStatus) {
+      staffStatus.textContent = 'Logged in as ' + (name || 'Academic Registrar');
+    }
+    loadDashboard();
+  }
 
   if (localStorage.getItem('staffToken') && loginPanel && issuePanel) {
-    loginPanel.hidden = true;
-    issuePanel.hidden = false;
-    if (staffStatus) staffStatus.textContent = 'Logged in as Academic Registrar';
+    enterStaffWorkspace('Academic Registrar');
   }
 
   if (loginForm) {
@@ -134,13 +304,8 @@ function setupStaffPortal() {
 
         if (data.success && data.token) {
           localStorage.setItem('staffToken', data.token);
-          if (loginPanel) loginPanel.hidden = true;
-          if (issuePanel) issuePanel.hidden = false;
-          if (staffStatus) {
-            staffStatus.textContent =
-              'Logged in as ' + (data.user && data.user.name ? data.user.name : 'Staff');
-          }
           if (msgEl) msgEl.textContent = '';
+          enterStaffWorkspace(data.user && data.user.name ? data.user.name : 'Staff');
         } else if (msgEl) {
           msgEl.textContent = data.message || 'Invalid credentials';
           msgEl.className = 'form-message error';
@@ -204,6 +369,7 @@ function setupStaffPortal() {
               '</code><p class="hint">Print this hash on the transcript for employers to verify.</p>';
           }
           issueForm.reset();
+          loadDashboard();
         } else if (msgEl) {
           msgEl.textContent = data.message || 'Failed to issue transcript';
           msgEl.className = 'form-message error';
@@ -217,12 +383,23 @@ function setupStaffPortal() {
     });
   }
 
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', function () {
+      loadDashboard();
+    });
+  }
+
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function () {
       localStorage.removeItem('staffToken');
       if (issuePanel) issuePanel.hidden = true;
       if (loginPanel) loginPanel.hidden = false;
       if (staffStatus) staffStatus.textContent = '';
+      var body = document.getElementById('dashboard-body');
+      if (body) {
+        body.innerHTML =
+          '<tr><td colspan="9" class="empty-cell">Sign in to load records.</td></tr>';
+      }
     });
   }
 }
