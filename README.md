@@ -2,7 +2,7 @@
 
 A secure Transcript Verification system for **Mbarara University of Science and Technology (MUST)**. Academic Registrar staff issue digitally protected transcripts with a unique verification hash. Employers and other institutions can instantly check whether a transcript is **Authentic**, **Invalid**, or **Revoked**.
 
-**Course:** SWE2106 Internet Technologies and Web Design  
+**Course:** SWE2106 Internet Technologies and Web Design
 **Etivity 5:** Front-end and Backend Development leveraging JavaScript
 
 ---
@@ -24,14 +24,14 @@ A secure Transcript Verification system for **Mbarara University of Science and 
 
 ## Tech Stack
 
-| Layer | Technology |
-| --- | --- |
-| Backend | Node.js, Express.js |
-| Database | MongoDB Atlas (live) |
-| Auth | JSON Web Tokens (JWT) |
+| Layer    | Technology                             |
+| -------- | -------------------------------------- |
+| Backend  | Node.js, Express.js                    |
+| Database | MongoDB Atlas (live)                   |
+| Auth     | JSON Web Tokens (JWT)                  |
 | Frontend | HTML, CSS, Vanilla JavaScript (Vercel) |
-| Hosting | Render (API) + Vercel (frontend) |
-| Testing | Postman |
+| Hosting  | Render (API) + Vercel (frontend)       |
+| Testing  | Postman                                |
 
 ---
 
@@ -56,15 +56,16 @@ You already have an Atlas cluster. Confirm:
    - Root directory is already set to `backend`
    - Build: `npm install`
    - Start: `npm start`
+
 4. Set **Environment Variables** in the Render dashboard (do not commit these):
 
-   | Key | Value |
-   | --- | --- |
-   | `MONGODB_URI` | your Atlas connection string |
-   | `JWT_SECRET` | any long random string |
-   | `JWT_EXPIRES_IN` | `1d` |
-   | `SIGNATURE_SECRET` | another random string |
-   | `NODE_ENV` | `production` |
+   | Key                | Value                        |
+   | ------------------ | ---------------------------- |
+   | `MONGODB_URI`      | your Atlas connection string |
+   | `JWT_SECRET`       | any long random string       |
+   | `JWT_EXPIRES_IN`   | `1d`                         |
+   | `SIGNATURE_SECRET` | another random string        |
+   | `NODE_ENV`         | `production`                 |
 
 5. Deploy. When it is live you get a URL like:
    `https://academic-record-verifier.onrender.com`
@@ -115,14 +116,6 @@ Open `frontend/index.html` in a browser.
 - Email: `registrar@must.ac.ug`
 - Password: `staff123`
 
-## Architecture and local setup notes
-
-- [High-resolution architecture diagram (PNG)](docs/architecture/academic-record-verifier-architecture.png)
-- [Editable Mermaid diagram for VS Code](docs/architecture/academic-record-verifier-architecture.mmd)
-- [Detailed local setup and implementation notes](docs/architecture/LOCAL-SETUP.md)
-
----
-
 ## Project Structure
 
 ```
@@ -159,14 +152,14 @@ academic-record-verifier/
 
 ## Main API Endpoints
 
-| Method | Path | Auth | Description |
-| --- | --- | --- | --- |
-| GET | `/api/health` | Public | Health check |
-| POST | `/api/auth/login` | Public | Staff login → JWT |
-| POST | `/api/transcripts/verify` | Public | Verify transcript |
-| POST | `/api/transcripts/issue` | JWT | Issue transcript |
-| PATCH | `/api/transcripts/revoke/:id` | JWT | Revoke transcript |
-| GET | `/api/transcripts/:id` | Public | Get by ID |
+| Method | Path                          | Auth   | Description       |
+| ------ | ----------------------------- | ------ | ----------------- |
+| GET    | `/api/health`                 | Public | Health check      |
+| POST   | `/api/auth/login`             | Public | Staff login → JWT |
+| POST   | `/api/transcripts/verify`     | Public | Verify transcript |
+| POST   | `/api/transcripts/issue`      | JWT    | Issue transcript  |
+| PATCH  | `/api/transcripts/revoke/:id` | JWT    | Revoke transcript |
+| GET    | `/api/transcripts/:id`        | Public | Get by ID         |
 
 Full request/response details and negative tests are in [`docs/postman/`](docs/postman/).
 
@@ -174,19 +167,19 @@ Full request/response details and negative tests are in [`docs/postman/`](docs/p
 
 ## Team Roles (Group C)
 
-| Member | Role |
-| --- | --- |
-| Mutebi Dalton | Team Lead, Repo & Frontend Integration |
-| Mukisa Timothy | Backend Lead – Express & Routes |
-| Ankunda Asaph Graham | Authentication, JWT & Roles |
-| Ataho Aprinal | Issuing Transcripts & Signature |
-| Ssekajigo Elvis Mark | Verification Endpoint |
-| Abaho Paul | Database, Schema & Seed Data |
-| Namukasa Fahiimah | Input Validation & Error Handling |
-| Mugisha Fahadi | Postman – Valid Requests |
-| Lusoke Atka Yursa | Postman – Invalid Requests & Docs |
-| Batabaine Hillary Austin | Frontend – Verify Page & Staff UI |
-| Ninsiima Caroline | Proposal, README & Presentation |
+| Member                   | Role                                   |
+| ------------------------ | -------------------------------------- |
+| Mutebi Dalton            | Team Lead, Repo & Frontend Integration |
+| Mukisa Timothy           | Backend Lead – Express & Routes        |
+| Ankunda Asaph Graham     | Authentication, JWT & Roles            |
+| Ataho Aprinal            | Issuing Transcripts & Signature        |
+| Ssekajigo Elvis Mark     | Verification Endpoint                  |
+| Abaho Paul               | Database, Schema & Seed Data           |
+| Namukasa Fahiimah        | Input Validation & Error Handling      |
+| Mugisha Fahadi           | Postman – Valid Requests               |
+| Lusoke Atka Yursa        | Postman – Invalid Requests & Docs      |
+| Batabaine Hillary Austin | Frontend – Verify Page & Staff UI      |
+| Ninsiima Caroline        | Proposal, README & Presentation        |
 
 ---
 
