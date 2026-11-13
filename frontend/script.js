@@ -75,6 +75,7 @@ function setupVerifyForm() {
 
         if (detailsEl && data.data) {
           var d = data.data;
+          var gpaText = d.gpa != null && d.gpa !== undefined ? String(d.gpa) : '-';
           detailsEl.innerHTML =
             '<div class="detail-row"><span>Student</span><strong>' +
             escapeHtml(d.studentName || '-') +
@@ -84,6 +85,8 @@ function setupVerifyForm() {
             escapeHtml(d.program || '-') +
             '</strong></div><div class="detail-row"><span>Year</span><strong>' +
             escapeHtml(String(d.yearOfStudy != null ? d.yearOfStudy : '-')) +
+            '</strong></div><div class="detail-row"><span>GPA</span><strong>' +
+            escapeHtml(gpaText) +
             '</strong></div>';
         }
       } else if (data.status === 'REVOKED') {

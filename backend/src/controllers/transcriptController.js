@@ -82,6 +82,7 @@ const issueTranscript = async (req, res) => {
         studentName: transcript.studentName,
         program: transcript.program,
         yearOfStudy: transcript.yearOfStudy,
+        gpa: transcript.gpa,
         verificationHash: transcript.verificationHash,
         issuedAt: transcript.createdAt
       }
@@ -156,6 +157,7 @@ const verifyTranscript = async (req, res) => {
         studentName: transcript.studentName,
         program: transcript.program,
         yearOfStudy: transcript.yearOfStudy,
+        gpa: transcript.gpa,
         issuedAt: transcript.createdAt
       }
     });
