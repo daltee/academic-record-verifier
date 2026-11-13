@@ -53,6 +53,7 @@ dist/
 build/
 tmp/
 temp/
+docs/diagrams
 
 # Certificates and private keys
 *.pem
